@@ -1,0 +1,20 @@
+PhotoViewer
+
+My exercise app for perl Dancer.
+
+Browse JPEG Photo in public/images/photo.
+
+Prepare Photo database.
+Execute
+
+1. create schema
+$ sh bin/phote_create.sh
+
+2. put photos into public/images/photo/.
+
+3. create thumb images.
+$ perl bin/thumb.pl
+
+4. load photo data into database.
+$ perl bin/load_photo.pl
+

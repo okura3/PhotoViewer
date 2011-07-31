@@ -1,0 +1,59 @@
+<div id="page" style="width:200px; height:100px; margin: auto;">
+<form action="#">
+<p style="width:150px; margin:25px auto;">
+Int :
+<input type="text" id="interval" value="7" style="width:2em;">Sec<br>
+<input type="submit" id="s_back" value="  ◀ ">&nbsp;
+<input type="submit" id="s_stop" value="stop">
+<input type="submit" id="s_forward" value=" ▶ ">&nbsp;
+</p>
+</form>
+</div>
+<script type="text/javascript" src="/javascripts/jquery.js"></script>
+<script type="text/javascript">
+<!--
+$(function(){
+  var interval = 7000;
+  var slide = 0;
+  var nextSlide = function(){
+    var href;
+    if ( slide == 1 ) {
+      href = opener.$('#nexti').attr('href');
+      opener.location.href = href;
+      setTimeout(nextSlide, interval);
+    }
+    else if ( slide == -1 ) {
+      href = opener.$('#prev').attr('href');
+      opener.location.href = href;
+      setTimeout(nextSlide, interval);
+    }
+    else {
+      clearTimeout();
+    }
+    return false;
+  };
+
+  $('#s_forward').click(function(){
+    clearTimeout();
+    interval = $('#interval').val() * 1000;
+    setTimeout(nextSlide, interval);
+    slide = 1;
+    return false;
+  });
+
+  $('#s_back').click(function(){
+    clearTimeout();
+    interval = $('#interval').val() * 1000;
+    setTimeout(nextSlide, interval);
+    slide = -1;
+    return false;
+  });
+
+  $('#s_stop').click(function(){
+    slide = 0;
+    clearTimeout();
+    return false;
+  });
+
+});
+--></script>

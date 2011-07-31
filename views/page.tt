@@ -1,0 +1,44 @@
+<div id="page">
+<p style="position:fixed; right:0">
+<a href="slide" id="slide" target="slide">slide</a>
+&nbsp;&nbsp;
+<a href="[% prev.page %]/[% prev.offset %]" id="prev">back</a>
+&nbsp;&nbsp;
+<a href="[% index.page %]">index</a>
+&nbsp;&nbsp;
+<a href="[% nexti.page %]/[% nexti.offset %]" id="nexti">next</a></p>
+<p><img src="/images/[% dir %]/[% img %]"></p>
+</div>
+<script type="text/javascript" src="/javascripts/jquery.js"></script>
+<script type="text/javascript">
+<!--
+$(function(){
+var myresize = function() {
+  var $img = $('img','#page');
+  var $imgWidth = $img.width();
+  var $imgHeight = $img.height();
+  var $window = $(window);
+  var $windowWidth = $window.width();
+  var $windowHeight = $window.height();
+  if ($windowWidth / $imgWidth > $windowHeight / $imgHeight) {
+    $img.width( $windowWidth );
+  }
+  else {
+    $img.height( $windowHeight );
+  }
+};
+
+$(window).resize(function(){
+  myresize();
+});
+
+myresize();
+
+$('#slide').click(function(){
+  var href = $(this).attr('href');
+  window.open(href, 'slide', 'width=200,height=100,menubar=no,toolbar=no,scrollbars=no');
+  return false;
+});
+
+});
+--></script>
