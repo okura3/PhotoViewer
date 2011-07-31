@@ -9,20 +9,17 @@ use PhotoViewer::Schema;
 our $VERSION = '0.1';
 
 get '/' => sub {
-  my $page = params->{page} // 1;
+  return redirect "/1";
+};
+
+get qr{^/(\d+)/?$} => sub {
+  my ($page) = splat;
   my $rs
       = schema->resultset('Photo')
       ->search( {}, { order_by => { -asc => [qw/dir img/] }, rows => 10 }, )
       ->page($page);
   my @entries = $rs->all();
   template 'index', { entries => \@entries, pager => $rs->pager, };
-};
-
-#get '/:page' => sub {
-get qr{^/(\d+)/?$} => sub {
-  my ($page) = splat;
-  params->{page} = $page;
-  return forward '/';
 };
 
 get qr{^/(\d+)/(\d+)/?} => sub {
