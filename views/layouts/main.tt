@@ -6,6 +6,7 @@
 <base href="/">
 <title>PhotoViewer</title>
 <link rel="stylesheet" href="/css/style.css" />
+<script type="text/javascript" src="/javascripts/jquery-1.6.2.min.js"></script>
 </head>
 <body>
 [% content | raw %]

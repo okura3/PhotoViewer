@@ -6,8 +6,14 @@ use Imager;
 
 my $thumb_size = 160;
 
+sub walk_thumbmake {
+  my $file       = $_;
+  my $thumb_name = thumbmake($file);
+  print STDERR "save $thumb_name\n";
+}
+
 sub thumbmake {
-  my $file = $_;
+  my $file = shift;
   return if $file =~ /^thumb_/;
   return unless $file =~ /\.jpg$/;
   return if -f "thumb_$file";
@@ -24,12 +30,12 @@ sub thumbmake {
 
   # $thumb->filter( type => 'autolevels' );
   $thumb->write( file => "thumb_$file" );
-  print STDERR "save thumb_$file\n";
+  return "thumb_$file";
 }
 
 sub walk {
   my $dir = shift;
-  find( { wanted => \&thumbmake, }, $dir );
+  find( { wanted => \&walk_thumbmake, }, $dir );
 }
 
 1;
