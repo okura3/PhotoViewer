@@ -1,5 +1,6 @@
 <div id="page">
-<p>
+
+<p class="page_navi">
 [%- MACRO mini(a, b) BLOCK -%]
 [%- IF a < b -%]
 [%- a -%]
@@ -7,7 +8,6 @@
 [%- b -%]
 [%- END -%]
 [%- END -%]
-
 [%- MACRO maxi(a, b) BLOCK -%]
 [%- IF a > b -%]
 [%- a -%]
@@ -15,7 +15,6 @@
 [%- b -%]
 [%- END -%]
 [%- END -%]
-
 [%- MACRO pivot(p, num) BLOCK -%]
 [%- IF p == num -%]
 <span style="font-size:1.4em;">[[% num %]]</span>
@@ -23,14 +22,11 @@
 <a href="[% num %]">[[% num %]]</a>
 [%- END -%]
 [%- END -%]
-
-[%- w = 6 -%]
+[%- w = 4 -%]
 [%- n = pager.last_page -%]
 [%- p = pager.current_page -%]
-
 [%- IF n <= w * 2 + 5 -%]
-1
-[%- FOREACH num IN [ 2 .. n ] -%]
+[%- FOREACH num IN [ 1 .. n ] -%]
 [%- pivot(p,num) -%]
 [%- END -%]
 [%- ELSE -%]
@@ -52,8 +48,8 @@
 [%- END -%]
 [%- pivot(p,n) -%]
 [%- END -%]
-
 </p>
+
 [%- FOREACH e IN entries -%]
 <div style="clear:none;">
 <p style="float:left;">
@@ -63,11 +59,13 @@
 </p>
 </div>
 [%- END -%]
-<p style="clear:both">
 
+<p class="page_navi" style="clear:both">
+[%- w = 4 -%]
+[%- n = pager.last_page -%]
+[%- p = pager.current_page -%]
 [%- IF n <= w * 2 + 5 -%]
-1
-[%- FOREACH num IN [ 2 .. n ] -%]
+[%- FOREACH num IN [ 1 .. n ] -%]
 [%- pivot(p,num) -%]
 [%- END -%]
 [%- ELSE -%]
@@ -77,8 +75,8 @@
 [%- ELSE -%]
 ..
 [%- END -%]
-[%- left  = maxi(3, mini(n - 2 * w - 2, p - w)) -%]
-[%- right = maxi(2 * w + 3, mini( n - 2, p + w)) -%]
+[%- left  = maxi(3, mini(n - 2 * w - 2, p - w)); -%]
+[%- right = maxi(2 * w + 3, mini( n - 2, p + w)); -%]
 [%- FOREACH num in [ left .. right ] -%]
 [%- pivot(p, num) -%]
 [%- END -%]
@@ -89,7 +87,7 @@
 [%- END -%]
 [%- pivot(p,n) -%]
 [%- END -%]
-
 </p>
+
 </div>
 <script type="text/javascript" src="/javascripts/jquery.js"></script>
