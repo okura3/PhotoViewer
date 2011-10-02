@@ -2,9 +2,8 @@ package PhotoViewer;
 use strict;
 use warnings;
 use Dancer ':syntax';
-use Dancer::Plugin::Ajax;
-use Dancer::Plugin::DBIC;
-use Dancer::Plugin::ProxyPath;
+use DBI;
+use Data::Page;
 use PhotoViewer::Schema;
 use PhotoViewer::Thumb;
 use Digest::MD5 qw(md5_hex);
@@ -16,33 +15,55 @@ use Cwd qw/chdir getcwd/;
 
 our $VERSION = '0.1';
 
-get '/upload' => sub {
-  template 'upload', { flush => qq{} }, { layout => undef, };
+sub debug_dump {
+  my @data = @_;
+  use Data::Dumper;
+  my @caller = caller(1);
+  my $debug = Data::Dumper->Dump([ \@caller, \@data ] );
+  open my $debugf, ">>", "/tmp/photoviewer.txt" or die;
+  print $debugf $debug, "\n";
+  close $debugf;
+}
+
+my $dbh;
+my $entries_per_page = 10;
+
+sub connect_db {
+  $dbh = DBI->connect("dbi:SQLite:dbname=".setting('database')) or
+     die $DBI::errstr;
+  return $dbh;
+}
+
+sub pager {
+  my $current_page = shift;
+  my ($total_entries) = $dbh->selectrow_array(
+    q/select count(*) from photo/
+  );
+  my $page = Data::Page->new();
+  $page->total_entries($total_entries);
+  $page->entries_per_page($entries_per_page);
+  $page->current_page($current_page);
+  return $page;
+}
+
+sub selectall_entries {
+  my $page = shift;
+  my $entries = $dbh->selectall_arrayref(
+    q/select id,dir,img from photo order by dir,img limit ? offset ?/,
+    {Columns=>{}},
+    $entries_per_page, $entries_per_page * ($page - 1),
+  );
+  return $entries;
+}
+
+before sub {
+  if (!defined $dbh) {
+    $dbh = connect_db();
+  }
 };
 
-ajax '/upload' => sub {
-  my $upload = upload('filename');
-  my $filename = File::Temp::tempnam( 'public/images/photo', 'up' ) . '.jpg';
-  my $thumb_name;
-  unless ( -f $filename ) {
-    $upload->link_to($filename);
-    my $cwd = getcwd();
-    chdir('public/images/photo');
-    $thumb_name = PhotoViewer::Thumb::thumbmake( basename($filename) );
-    chdir($cwd);
-    schema->resultset('Photo')->create(
-      { dir => "photo",
-        img => basename($filename),
-      }
-    );
-  }
-
-  content_type "text/json";
-  return to_json {
-    path     => "images/photo/",
-    filename => $thumb_name,
-    img      => encode_entities(qq{<img src="images/photo/$thumb_name">})
-  };
+get '/upload' => sub {
+  template 'upload', { flush => qq{} }, { layout => undef, };
 };
 
 get '/' => sub {
@@ -51,34 +72,28 @@ get '/' => sub {
 
 get qr{^/(\d+)/?$} => sub {
   my ($page) = splat;
-  my $rs
-      = schema->resultset('Photo')
-      ->search( {}, { order_by => { -asc => [qw/dir img/] }, rows => 10 }, )
-      ->page($page);
-  my @entries = $rs->all();
-  template 'index', { entries => \@entries, pager => $rs->pager, };
+  my $entries = selectall_entries( $page );
+  template 'index', {
+    entries => $entries,
+    pager => pager($page),
+  };
 };
 
 get qr{^/(\d+)/(\d+)/?} => sub {
   my ( $page, $offset ) = splat;
   $page   //= 1;
   $offset //= 0;
-  my $rs
-      = schema->resultset('Photo')
-      ->search( {}, { order_by => { -asc => [qw/dir img/] }, rows => 10 }, )
-      ->page($page);
-  my $pager = $rs->pager;
+  my $pager = pager($page);
   if ( $page >= $pager->last_page ) {
     $page = $pager->last_page;
   }
-  $rs = $rs->page($page);
   if ( $offset >= $pager->entries_on_this_page - 1 ) {
     $offset = $pager->entries_on_this_page - 1;
   }
-  my @entries = $rs->all();
-  my $ent     = $entries[$offset];
-  my $dir     = $ent->dir;
-  my $img     = $ent->img;
+  my $entries = selectall_entries($page);
+  my $ent     = $entries->[$offset];
+  my $dir     = $ent->{dir};
+  my $img     = $ent->{img};
 
   my $next;
   if ( $offset >= $pager->entries_on_this_page - 1 ) {

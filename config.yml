@@ -1,6 +1,11 @@
 appname: "PhotoViewer"
 layout: "main"
 charset: "UTF-8"
+database: "data/photo.sqlite"
+logger: file
+log_path: logs
+log_file: "PhotoViewer.log"
+#template: toolkit
 template: "xslate"
 engines:
   xslate:
@@ -8,12 +13,3 @@ engines:
     suffix: '.tt'
     cache: 1
     cache_dir: xslate_cache
-plugins:
-  DBIC:
-    photo:
-      schema_class: PhotoViewer::Schema
-      dsn: "dbi:SQLite:dbname=data/photo.sqlite"
-      options:
-logger: file
-log_path: logs
-log_file: "PhotoViewer.log"
