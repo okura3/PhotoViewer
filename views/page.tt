@@ -9,30 +9,42 @@
 <a href="[% nexti.page %]/[% nexti.offset %]" id="nexti">next</a></p>
 <p><img src="/images/[% dir %]/[% img %]"></p>
 </div>
-<script type="text/javascript" src="/javascripts/jquery.js"></script>
+<script type="text/javascript" src="/javascripts/jquery-1.6.2.min.js"></script>
 <script type="text/javascript">
 <!--
 $(function(){
+var $img;
+var $imgWidth;
+var $imgHeight;
+var $window;
+
 var myresize = function() {
-  var $img = $('img','#page');
-  var $imgWidth = $img.width();
-  var $imgHeight = $img.height();
-  var $window = $(window);
   var $windowWidth = $window.width();
   var $windowHeight = $window.height();
-  if ($windowWidth / $imgWidth > $windowHeight / $imgHeight) {
+  var $widthRatio = $windowWidth / $imgWidth;
+  var $heightRatio = $windowHeight / $imgHeight;
+  if ($widthRatio > $heightRatio ) {
     $img.width( $windowWidth );
+    $img.height( $imgHeight * $widthRatio  );
   }
   else {
+    $img.width( $imgWidth * $heightRatio );
     $img.height( $windowHeight );
   }
 };
 
-$(window).resize(function(){
+jQuery.event.add(window, "load", function(){
+  $window = $(window);
+  $img = $('img','#page');
+  $imgWidth = $img.width();
+  $imgHeight = $img.height();
+  myresize();
   myresize();
 });
 
-myresize();
+$(window).resize(function(){
+  myresize();
+});
 
 $('#slide').click(function(){
   var href = $(this).attr('href');

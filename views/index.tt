@@ -1,5 +1,4 @@
 <div id="page">
-
 <p class="page_navi">
 [%- MACRO mini(a, b) BLOCK -%]
 [%- IF a < b -%]
@@ -88,6 +87,5 @@
 [%- pivot(p,n) -%]
 [%- END -%]
 </p>
-
 </div>
-<script type="text/javascript" src="/javascripts/jquery.js"></script>
+<script type="text/javascript" src="/javascripts/jquery-1.6.2.min.js"></script>
