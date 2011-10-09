@@ -1,15 +1,15 @@
-appname: "PhotoViewer"
-layout: "main"
+appname: PhotoViewer
+layout: main
 charset: "UTF-8"
 database: "data/photo.sqlite"
 logger: file
 log_path: logs
 log_file: "PhotoViewer.log"
-#template: toolkit
-template: "xslate"
+template: xslate
 engines:
-  xslate:
-    syntax: TTerse
-    suffix: '.tt'
-    cache: 1
-    cache_dir: xslate_cache
+  template:
+    xslate:
+      syntax: TTerse
+      suffix: .tt
+      cache: 1
+      cache_dir: xslate_cache
