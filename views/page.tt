@@ -12,38 +12,44 @@
 <script type="text/javascript" src="/javascripts/jquery-1.6.2.min.js"></script>
 <script type="text/javascript">
 <!--
-$(function(){
+var $window = $(window);
+var $body = $('body');
 var $img;
-var $imgWidth;
-var $imgHeight;
-var $window;
+var imgWidth;
+var imgHeight;
+var timer;
 
-var myresize = function() {
-  var $windowWidth = $window.width();
-  var $windowHeight = $window.height();
-  var $widthRatio = $windowWidth / $imgWidth;
-  var $heightRatio = $windowHeight / $imgHeight;
-  if ($widthRatio > $heightRatio ) {
-    $img.width( $windowWidth );
-    $img.height( $imgHeight * $widthRatio  );
+var myResize = function(){
+  var windowWidth = $window.width();
+  var windowHeight = $window.height();
+  var widthRatio  = windowWidth / imgWidth;
+  var heightRatio = windowHeight / imgHeight;
+  if ( widthRatio > heightRatio ) {
+    $img.width( windowWidth );
+    $img.height( Math.floor(imgHeight * widthRatio) );
+    $body.css('overflowX', 'hidden');
+    $body.css('overflowY', 'auto');
   }
   else {
-    $img.width( $imgWidth * $heightRatio );
-    $img.height( $windowHeight );
+    $img.width( Math.floor(imgWidth * heightRatio) );
+    $img.height( windowHeight );
+    $body.css('overflowX', 'auto');
+    $body.css('overflowY', 'hidden');
   }
 };
 
-jQuery.event.add(window, "load", function(){
-  $window = $(window);
+jQuery.event.add( window, "load", function(){
   $img = $('img','#page');
-  $imgWidth = $img.width();
-  $imgHeight = $img.height();
-  myresize();
-  myresize();
+  imgWidth = $img.width();
+  imgHeight = $img.height();
+  myResize();
 });
 
-$(window).resize(function(){
-  myresize();
+$window.resize(function(){
+  if (timer) {
+    clearTimeout(timer);
+  }
+  timer = setTimeout( function(){myResize()}, 300);
 });
 
 $('#slide').click(function(){
@@ -52,5 +58,4 @@ $('#slide').click(function(){
   return false;
 });
 
-});
 --></script>
