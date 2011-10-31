@@ -56,7 +56,7 @@ sub selectall_entries {
   return $entries;
 }
 
-before sub {
+hook before => sub {
   if (!defined $dbh) {
     $dbh = connect_db();
   }
